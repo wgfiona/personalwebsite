@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Keeps layout sized to device width and prevents zoom glitches -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>My Personal Space</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -22,48 +23,49 @@
             --shadow: rgba(255,255,255,0.1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-
+        /* Global reset + mobile stability */
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.3s ease; }
+        html { -webkit-text-size-adjust: 100%; }
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
+            overflow-x: hidden; /* Kill horizontal scroll on tiny screens */
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 2rem;
+            /* Fluid side padding that shrinks on small screens */
+            padding: min(6vw, 2rem);
         }
 
         .theme-toggle {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: max(12px, env(safe-area-inset-top));
+            right: max(12px, env(safe-area-inset-right));
             background: var(--card-bg);
             border: none;
             padding: 10px;
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 2px 5px var(--shadow);
+            z-index: 1000; /* Stay above content */
         }
 
         .profile-section {
             display: flex;
             align-items: center;
-            gap: 3rem;
-            margin: 4rem 0;
+            gap: clamp(1rem, 4vw, 3rem);
+            margin: clamp(2rem, 5vw, 4rem) 0;
+            flex-wrap: wrap; /* Allow wrap on small screens */
         }
 
         .profile-image {
-            width: 300px;
-            height: 300px;
+            width: min(45vw, 300px);
+            height: min(45vw, 300px);
+            max-width: 100%;
             border-radius: 50%;
             object-fit: cover;
             box-shadow: 0 4px 15px var(--shadow);
@@ -77,43 +79,51 @@
         }
 
         .profile-info h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            font-size: clamp(1.6rem, 4.5vw, 2.5rem);
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-info p {
+            font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+            opacity: 0.9;
         }
 
         .info-card {
             background: var(--card-bg);
-            padding: 2rem;
+            padding: clamp(1rem, 3vw, 2rem);
             border-radius: 15px;
-            margin: 2rem 0;
+            margin: clamp(1rem, 3vw, 2rem) 0;
             box-shadow: 0 4px 15px var(--shadow);
         }
 
         .social-links {
             display: flex;
-            gap: 1rem;
-            margin: 2rem 0;
+            gap: clamp(0.6rem, 2.5vw, 1rem);
+            margin: clamp(1rem, 3vw, 2rem) 0;
             justify-content: center;
+            flex-wrap: wrap; /* Icons wrap instead of overflowing */
         }
 
         .social-links a {
             color: var(--text-color);
-            font-size: 1.5rem;
-            padding: 10px;
+            font-size: clamp(1.25rem, 3.5vw, 1.6rem);
+            padding: 12px;
             border-radius: 50%;
             background: var(--card-bg);
             box-shadow: 0 2px 5px var(--shadow);
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease;
+            min-width: 44px; /* Touch target */
+            min-height: 44px; /* Touch target */
+            display: grid;
+            place-items: center;
         }
 
-        .social-links a:hover {
-            transform: translateY(-5px);
-        }
+        .social-links a:hover { transform: translateY(-4px); }
 
         .back-to-top {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: max(14px, env(safe-area-inset-bottom));
+            right: max(14px, env(safe-area-inset-right));
             background: var(--accent-color);
             color: white;
             padding: 15px;
@@ -121,12 +131,13 @@
             cursor: pointer;
             display: none;
             box-shadow: 0 2px 5px var(--shadow);
+            z-index: 999;
         }
 
         footer {
             text-align: center;
-            padding: 2rem;
-            margin-top: 4rem;
+            padding: clamp(1.25rem, 4vw, 2rem);
+            margin-top: clamp(2rem, 6vw, 4rem);
             border-top: 1px solid var(--shadow);
         }
 
@@ -134,6 +145,18 @@
             font-style: italic;
             margin-top: 10px;
             color: var(--accent-color);
+            font-size: clamp(0.95rem, 2.5vw, 1rem);
+        }
+
+        /* Mobile-specific refinements */
+        @media (max-width: 768px) {
+            .profile-section { flex-direction: column; text-align: center; }
+            .profile-image { width: min(60vw, 220px); height: min(60vw, 220px); }
+        }
+
+        /* Respect users who prefer reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; animation: none !important; }
         }
     </style>
 </head>
@@ -151,66 +174,75 @@
             </div>
         </div>
 
-     <!-- This is a comment   <div class="info-card">
+        <!-- Sections commented out (kept for future use) -->
+        <!--
+        <div class="info-card">
             <h2>About Me</h2>
-            <p>Hi, I'm Fiona! I'm 16 years old and born in Malaysia. I carry unlimited ambition and a relentless drive to turn my dreams into reality. I thrive on the sense of being busy—though I sometimes get burnt out, I'm learning to manage it. I can't stand having nothing to tackle, so I strive to live an extraordinary and fulfilling life, guided by the maxim you only live once. Passionate about technology, debates, and exploring the infinite potential of human innovation to make life better and more convenient, I see challenges as stepping stones to greatness. Undefined and unstoppable—that's how I roll. 🤓✨ <br><br>
-            Fun facts about me: Almost every single person has a different impression and comment about me—some say I'm cruel, some say I'm kind, and some say I'm unpredictable. Well... I am all of them😉.<br><br>
-            Fun fact about this website:This is the product of me being triggered by the caffeine I consumed at midnight, which cost me four straight hours in front of my laptop! ☕💻 (Yes, I am a coffee addict).
+            <p>...</p>
         </div>
 
         <div class="info-card">
             <h2>Education</h2>
-            <p>I’m currently a student at SMK METHODIST, where I’m focused on building modern skills like leadership, science, technology, and communication. Life’s all about learning as we go, right? I don’t consider myself a perfect Homo sapiens by any means, but I always try to learn from my mistakes. It can be disappointing but that’s just how life works, isn’t it🤔?
-
-            </p>
+            <p>...</p>
         </div>
 
         <div class="info-card">
             <h2>Hobbies</h2>
-            <p>I thrive on staying busy and feeling fulfilled, though I admit I can be a bit of a procrastinator at times. The maxim “It’s now or never” describes me best (but trust me, I’m actively learning to change that!). I’m always eager to navigate life skills that I consider important, such as leadership and technology. Staying engaged in projects and learning new things is what keeps me motivated. I also enjoy reading and watching Netflix (just not into romantic stuff!!!).</p>
-        </div>--> 
+            <p>...</p>
+        </div>
+        -->
 
-       <div class="social-links">
-    <!-- WhatsApp -->
-    <a href="https://api.whatsapp.com/send?phone=60167945267&text=Hi%20I%20find%20you%20through%20your%20website%20and%20I%20want%20to%20connect%20with%20you" target="_blank"><i class="fab fa-whatsapp"></i></a>
-    
-    <!-- Instagram -->
-    <a href="https://www.instagram.com/fionn_aa91/" target="_blank"><i class="fab fa-instagram"></i></a>
-    
-    <!-- Facebook -->
-    <a href="https://www.facebook.com/dew2g/" target="_blank"><i class="fab fa-facebook"></i></a>
-    
-    <!-- LinkedIn (with alert) -->
-    <a href="javascript:void(0)" onclick="alert('LinkedIn currently not available, please contact me through other ways')"><i class="fab fa-linkedin"></i></a>            
-    
-    <!-- Telegram -->
-    <a href="https://t.me/fia_wg91" target="_blank"><i class="fab fa-telegram"></i></a>
-    
-    <!-- Email -->
-    <a href="mailto:fionawong090110@gmail.com"><i class="fas fa-envelope"></i></a>
-    
-    <!-- GitHub (with alert) -->
-    <a href="javascript:void(0)" onclick="alert('Maybe someday later I will share but not now')"><i class="fab fa-github"></i></a>
-</div>
+        <div class="social-links">
+            <!-- WhatsApp -->
+            <a href="https://api.whatsapp.com/send?phone=60167945267&text=Hi%20I%20find%20you%20through%20your%20website%20and%20I%20want%20to%20connect%20with%20you" target="_blank" aria-label="WhatsApp">
+                <i class="fab fa-whatsapp" aria-hidden="true"></i>
+            </a>
 
+            <!-- Instagram -->
+            <a href="https://www.instagram.com/fionn_aa91/" target="_blank" aria-label="Instagram">
+                <i class="fab fa-instagram" aria-hidden="true"></i>
+            </a>
 
-      
+            <!-- Facebook -->
+            <a href="https://www.facebook.com/dew2g/" target="_blank" aria-label="Facebook">
+                <i class="fab fa-facebook" aria-hidden="true"></i>
+            </a>
+
+            <!-- LinkedIn (with alert) -->
+            <a href="javascript:void(0)" onclick="alert('LinkedIn currently not available, please contact me through other ways')" aria-label="LinkedIn">
+                <i class="fab fa-linkedin" aria-hidden="true"></i>
+            </a>
+
+            <!-- Telegram -->
+            <a href="https://t.me/fia_wg91" target="_blank" aria-label="Telegram">
+                <i class="fab fa-telegram" aria-hidden="true"></i>
+            </a>
+
+            <!-- Email -->
+            <a href="mailto:fionawong090110@gmail.com" aria-label="Email">
+                <i class="fas fa-envelope" aria-hidden="true"></i>
+            </a>
+
+            <!-- GitHub (with alert) -->
+            <a href="javascript:void(0)" onclick="alert('Maybe someday later I will share but not now')" aria-label="GitHub">
+                <i class="fab fa-github" aria-hidden="true"></i>
+            </a>
+        </div>
 
         <footer>
             <p>&copy; 2025 Fiona Wong. All rights reserved.</p>
-            <p class="coming-soon">Last update: 30/8/2025 </p>
+            <p class="coming-soon">Last updated on 30/8/2025</p>
         </footer>
     </div>
 
-    <button class="back-to-top" onclick="scrollToTop()">
-        <i class="fas fa-arrow-up"></i>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top">
+        <i class="fas fa-arrow-up" aria-hidden="true"></i>
     </button>
 
     <script>
         function toggleTheme() {
             const body = document.body;
             const icon = document.querySelector('.theme-toggle i');
-            
             if (body.dataset.theme === 'dark') {
                 body.dataset.theme = '';
                 icon.classList.replace('fa-sun', 'fa-moon');
@@ -221,24 +253,14 @@
         }
 
         const backToTop = document.querySelector('.back-to-top');
-        
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTop.style.display = 'block';
-            } else {
-                backToTop.style.display = 'none';
-            }
+            backToTop.style.display = window.scrollY > 300 ? 'block' : 'none';
         });
 
         function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
 </html>
-
-
-
+<!-- This is a comment <div class="info-card"> <h2>About Me</h2> <p>Hi, I'm Fiona! I'm 16 years old and born in Malaysia. I carry unlimited ambition and a relentless drive to turn my dreams into reality. I thrive on the sense of being busy—though I sometimes get burnt out, I'm learning to manage it. I can't stand having nothing to tackle, so I strive to live an extraordinary and fulfilling life, guided by the maxim you only live once. Passionate about technology, debates, and exploring the infinite potential of human innovation to make life better and more convenient, I see challenges as stepping stones to greatness. Undefined and unstoppable—that's how I roll. 🤓✨ <br><br> Fun facts about me: Almost every single person has a different impression and comment about me—some say I'm cruel, some say I'm kind, and some say I'm unpredictable. Well... I am all of them😉.<br><br> Fun fact about this website:This is the product of me being triggered by the caffeine I consumed at midnight, which cost me four straight hours in front of my laptop! ☕💻 (Yes, I am a coffee addict). </div> <div class="info-card"> <h2>Education</h2> <p>I’m currently a student at SMK METHODIST, where I’m focused on building modern skills like leadership, science, technology, and communication. Life’s all about learning as we go, right? I don’t consider myself a perfect Homo sapiens by any means, but I always try to learn from my mistakes. It can be disappointing but that’s just how life works, isn’t it🤔? </p> </div> <div class="info-card"> <h2>Hobbies</h2> <p>I thrive on staying busy and feeling fulfilled, though I admit I can be a bit of a procrastinator at times. The maxim “It’s now or never” describes me best (but trust me, I’m actively learning to change that!). I’m always eager to navigate life skills that I consider important, such as leadership and technology. Staying engaged in projects and learning new things is what keeps me motivated. I also enjoy reading and watching Netflix (just not into romantic stuff!!!).</p> </div>-->
